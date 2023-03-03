@@ -8,4 +8,5 @@ Note that the install instructions at the marineHeatWaves repository are obsolet
 ## Reminders
 - [ ] Make requirements text file (don't forget to include marineHeatWaves and icecream)
 - [ ] Document whole workflow (regrid, mergefile, shatter, calculate)
+- [ ] Determine number of processes
 - [x] Link to marineHeatWaves and describe install
