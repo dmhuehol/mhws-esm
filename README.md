@@ -10,3 +10,4 @@ Note that the install instructions at the marineHeatWaves repository are obsolet
 - [ ] Document whole workflow (regrid, mergefile, shatter, calculate)
 - [ ] Determine number of processes
 - [x] Link to marineHeatWaves and describe install
+- [x] Optimize and update regridding code
