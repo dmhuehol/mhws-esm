@@ -50,7 +50,7 @@ for rg in refGlobs:
             if __name__ == '__main__':
                 mp.set_start_method('fork', force=True)
                 proc = mp.Process( # Each parallel process calculates MHWs for a data shard
-                    target=fm.calc_marine_heatwaves, args=(dg, rg, outDict))
+                    target=fm.calc_marine_heatwaves, args=(rg, dg, outDict))
             if dc % numProc == 0 and dc !=0:
                 proc.start()
                 proc.join() # Run numProc+1 processes to completion before starting more
