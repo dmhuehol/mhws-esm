@@ -9,7 +9,7 @@ import glob
 import numpy as np
 import xarray as xr
 
-import necessary_helper_fun as nhf
+import fun_mhws as fm
 
 ##### INPUTS ####
 dataDict = { 
@@ -43,7 +43,7 @@ dsetFullTimes = inDset.resample(time='1D').asfreq()
 
 # Convert to ordinal time, as needed by marineHeatWaves package
 resampleTimes = dsetFullTimes.time.data
-ordArr = nhf.make_ord_array(resampleTimes)
+ordArr = fm.make_ord_array(resampleTimes)
 
 # Set indices to shatter array into "shards"
 frct = np.arange(
@@ -53,7 +53,7 @@ frct = np.arange(
 if outDict["calcEachRlz"]:
     ic('Processing individual members!')
     for r in inDset.realization.data:
-        rfd = nhf.mine_file_str(inGlobs[r])       
+        rfd = fm.mine_file_str(inGlobs[r])       
         for fc,fv in enumerate(frct[:-1]): # Break up array at predefined indices
             actRlz = dsetFullTimes[rfd["var"]].isel(realization=r)
             frg = (fv, frct[fc+1]) # Defining bounds of fragment
@@ -82,7 +82,7 @@ if outDict["calcEachRlz"]:
 # Calculate ensemble mean and save separate shards for ensemble mean
 if outDict["calcRlzMn"]:
     ic('Calculating ensemble mean!')
-    rfd = nhf.mine_file_str(inGlobs[0]) # Need this even if individual members aren't saved
+    rfd = fm.mine_file_str(inGlobs[0]) # Need this even if individual members aren't saved
     rlzMnDset = dsetFullTimes.mean(dim='realization').compute()   
     for fc,fv in enumerate(frct[:-1]):
         frg = (fv, frct[fc+1]) # Defining bounds of fragment

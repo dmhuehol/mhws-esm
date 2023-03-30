@@ -1,4 +1,5 @@
-''' Functions used in the mhws-esm package '''
+''' Functions used for calculating MHWs and preprocessing
+data in the mhws-esm package. '''
 
 from icecream import ic
 import sys
@@ -12,8 +13,7 @@ import xarray as xr
 xr.set_options(keep_attrs=True)
 
 def calc_marine_heatwaves(refFile, dataFile, outDict):
-    ''' Calculate marine heatwaves from input file relative to a reference climatology '''
-    
+    ''' Calculate marine heatwaves from input file relative to a reference climatology '''   
     # ticSetupDef = time.time()
     mDef = xr.open_dataset(refFile) # NO chunking, it isn't needed for future operations
     mDefSst = mDef['SST'].data
@@ -39,17 +39,17 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
         for lonc, lonv in enumerate(sstLons):
             actDat = sstDat[:, latc, lonc]
             actDef = mDefSst[:, latc, lonc]
-            ticEachMhw = time.time()
+            # ticEachMhw = time.time()
             altClim = list([mDefTimes, actDef])
             checkNan = np.isnan(actDat[0]) # NaNs occur over e.g., land
             if checkNan == False:
-                ticEachMhw = time.time()
+                # ticEachMhw = time.time()
                 altClim = list([mDefTimes, actDef])
                 mhwsDict, climDict = mhws.detect(
                     sstTimes, actDat, climatologyPeriod=[2015,2024],
                     alternateClimatology=altClim)
-                tocEachMhwJustCalc = time.time() - ticEachMhw #; ic(tocEachMhwJustCalc)
-                timerJustCalc.append(tocEachMhwJustCalc)
+                # tocEachMhwJustCalc = time.time() - ticEachMhw #; ic(tocEachMhwJustCalc)
+                # timerJustCalc.append(tocEachMhwJustCalc)
                 bnryMhw = np.zeros(np.shape(sstTimes)) # Array for each MHW binary timeseries
                 mhwStrtInd = mhwsDict['index_start']
                 mhwDurInd = mhwsDict['duration']
@@ -57,8 +57,8 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
                     actDur = mhwDurInd[actInd]
                     bnryMhw[startInd:startInd+actDur] = 1 # Times with active MHW get a 1
                 mhwTemplate[:, latc, lonc] = bnryMhw
-                tocEachMhw = time.time() - ticEachMhw #; ic(tocEachMhw)
-                timerEachMhw.append(tocEachMhw)
+                # tocEachMhw = time.time() - ticEachMhw #; ic(tocEachMhw)
+                # timerEachMhw.append(tocEachMhw)
             
     # tocMhwOverall = time.time() - ticMhwOverall; ic(tocMhwOverall)
     # ic(timerJustCalc, np.mean(timerJustCalc))
@@ -96,6 +96,7 @@ def make_ord_array(inTimes):
     return ordArr
     
 def mine_file_str(fileStr):
+    ''' Mine useful metadata from filename '''
     pieces = fileStr.split('.')
     fileDict = {
         "scn": pieces[2],

@@ -61,13 +61,13 @@ for dc, dv in enumerate(dataList):
     lenDat = len(dataList)
     if __name__== '__main__': # If statement required by multiprocessing
         mp.set_start_method('fork', force=True)
-        shard = mp.Process( # Each parallel shard process regrids and saves a file
+        proc = mp.Process( # Each parallel process regrids and saves a file
             target=regridFun, args=(dv, ocnCd1, ocnCd2))
         if dc % nProc == 0 and dc != 0: # Every nProc number of files
-            shard.start()
-            shard.join() # Complete nProc+1 processes before starting more
-            shard.close() # Free up resources to lower load on machine
+            proc.start()
+            proc.join() # Complete nProc+1 processes before starting more
+            proc.close() # Free up resources to lower load on machine
         else:
-            shard.start()
+            proc.start()
         filesRemaining = lenDat - dc - 1
         numleft = ic(filesRemaining) # Cheap "progress bar"
