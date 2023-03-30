@@ -1,17 +1,16 @@
-''' fun_regrid_pop
-Functions to regrid Parallel Ocean Model (POP) output from the B-grid to a
+''' fun_remap
+Functions to remap Parallel Ocean Model (POP) output from the B-grid to a
 standard lat/lon using interpolation.
 
 Originally written by Emily Gordon based on code provided by Zachary Labe
 Modified by Daniel Hueholt
 '''
-
-from icecream import ic
-import sys
-
 import numpy as np
 import xarray as xr
 import scipy.interpolate as interp
+import sys
+
+from icecream import ic
 
 def extract_ocn_latlons(ocngrid, latName, lonName):
     ''' Extract lat/lons from an ocean grid (POP, NEMO) '''

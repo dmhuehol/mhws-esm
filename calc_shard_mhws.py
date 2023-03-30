@@ -1,11 +1,15 @@
 ''' calc_shard_mhws 
-Calculate MHWs from shard files in parallel using multiprocessing.
+Calculate MHWs from shard files in parallel using multiprocessing. Run
+"shatter" first to break data up into manageable shard files.
 
-Run shatter first to obtain shard files.
-
-SUGGESTED TOKENS: 
-    ARISE-SAI-1.5: '*SSP245-TSMLT-GAUSS*'
-    SSP2-4.5: '*BWSSP245*'
+#### INPUTS ####
+dataDict: defines input data
+    dataPath: input path of data shards
+    dataToken: suggested tokens for datasets below
+        ARISE-SAI-1.5: '*SSP245-TSMLT-GAUSS*'
+        SSP2-4.5: '*BWSSP245*'
+    refPath: input path for reference shards
+    refToken: token for reference shards--see dataToken for options
     
 NOTE: The multiprocessing documentation claims 'fork' functionality only works 
 on Unix-based systems (e.g., Mac OS, Linux). Thus, this code likely will not
@@ -14,13 +18,11 @@ run on Windows, although I have not verified this.
 Written by Daniel Hueholt
 Graduate Research Assistant at Colorado State University
 '''
-
-from icecream import ic
-import sys
-
 import glob
 import multiprocessing as mp
+import sys
 
+from icecream import ic
 import fun_mhws as fm
 
 #### INPUTS ####

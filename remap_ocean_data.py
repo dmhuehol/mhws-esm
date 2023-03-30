@@ -1,4 +1,4 @@
-'''  wrap_ocean_script
+'''  remap_ocean_data
 Runs functions to remap ocean model output from the ocean grid into standard
 lat/lon coordinates and save as a new netCDF file. Currently, this code works
 for output from the Parallel Ocean Program (POP) and the Nucleus for European
@@ -12,9 +12,9 @@ dataVar: Manually provide variable name for the input files, examples below.
 ocnDimNames: Provide dimension names for the starting grid.
     For POP (CESM): 'TLAT', 'TLONG'
     For NEMO (UKESM): 'latitude', 'longitude'
-regridFun: Function from fun_regrid_pop to use for regridding.
-    For POP (CESM): frp.operate_regrid_cesm
-    For NEMO (UKESM): frp.operate_regrid_ukesm
+regridFun: Function from fun_remap to use for regridding.
+    For POP (CESM): fr.operate_regrid_cesm
+    For NEMO (UKESM): fr.operate_regrid_ukesm
         
 NOTE: The multiprocessing documentation claims 'fork' functionality only works 
 on Unix-based systems (e.g., Mac OS, Linux). Thus, this code likely will not
@@ -24,16 +24,14 @@ Written by Daniel Hueholt
 Graduate Research Assistant at Colorado State University
 Based on code originally written by Emily Gordon and Zachary Labe.
 '''
-
-from icecream import ic
-import sys
-
 import glob
 import multiprocessing as mp
 import numpy as np
+import sys
 import xarray as xr
 
-import fun_regrid_pop as frp
+from icecream import ic
+import fun_remap as fr
 
 # Inputs - see docstring for details
 dataPath = '/Users/dhueholt/Documents/ecology_data/monthly_OCNTEMP500/shortForRgTest/'
@@ -41,7 +39,7 @@ outPath = '/Users/dhueholt/Documents/mhwwg_out/' # Location to save regridded fi
 dataVar = 'TEMP'
 nProc = 2 # Spawn nProc+1 number of processes for regridding
 ocnDimNames = ['TLAT', 'TLONG']
-regridFun = frp.operate_regrid_cesm
+regridFun = fr.operate_regrid_cesm
 
 # Open files and extract ocean coordinates
 strList = sorted(glob.glob(dataPath + "*.nc"))
@@ -53,7 +51,7 @@ for fc,fv in enumerate(strList):
     inDarr.attrs['outPath'] = outPath
     dataList.append(inDarr) # Place all in single list
 
-ocnCd1, ocnCd2 = frp.extract_ocn_latlons(
+ocnCd1, ocnCd2 = fr.extract_ocn_latlons(
     inDarr, ocnDimNames[0], ocnDimNames[1])
 
 # Regrid to standard lat/lon and save

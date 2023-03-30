@@ -1,25 +1,32 @@
-''' Functions used for calculating MHWs and preprocessing
-data in the mhws-esm package. '''
+''' fun_mhws
+Functions used for calculating MHWs and preprocessing data in the
+mhws-esm package.
 
-from icecream import ic
-import sys
-import time
-
+Written by Daniel Hueholt
+Graduate Research Assistant at Colorado State University
+'''
 import dask
 from datetime import date
 import marineHeatWaves as mhws
 import numpy as np
+import sys
+import time
 import xarray as xr
 xr.set_options(keep_attrs=True)
 
+from icecream import ic
+
 def calc_marine_heatwaves(refFile, dataFile, outDict):
-    ''' Calculate marine heatwaves from input file relative to a reference climatology '''   
+    ''' Calculate marine heatwaves from input file relative to a 
+    reference climatology '''
+    # Open reference file
     # ticSetupDef = time.time()
     mDef = xr.open_dataset(refFile) # NO chunking, it isn't needed for future operations
     mDefSst = mDef['SST'].data
     mDefTimes = mDef.time.data
     # tocSetupDef = time.time() - ticSetupDef; ic(tocSetupDef)
     
+    # Open data file
     # ticOpenData = time.time()
     rawDset = xr.open_dataset(dataFile) # NO chunking, data laid out efficiently by shatter
     sstDat = rawDset['SST'].data
@@ -31,6 +38,7 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
     mhwTemplate = np.empty(np.shape(sstDat))
     mhwTemplate.fill(np.nan) # timexlatxlon NaNs to be populated with data
     
+    # Calculate marine heatwaves
     # timerJustCalc = list()
     # timerEachMhw = list()
     # ticMhwOverall = time.time()
@@ -58,13 +66,13 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
                     bnryMhw[startInd:startInd+actDur] = 1 # Times with active MHW get a 1
                 mhwTemplate[:, latc, lonc] = bnryMhw
                 # tocEachMhw = time.time() - ticEachMhw #; ic(tocEachMhw)
-                # timerEachMhw.append(tocEachMhw)
-            
+                # timerEachMhw.append(tocEachMhw)           
     # tocMhwOverall = time.time() - ticMhwOverall; ic(tocMhwOverall)
     # ic(timerJustCalc, np.mean(timerJustCalc))
     # ic(timerEachMhw, np.mean(timerEachMhw))
     # ic(np.unique(mhwTemplate))
     
+    # Construct an MHWs dataset and save to netCDF
     mhwDset = xr.Dataset(
         {'binary_mhw': (("time", "lat", "lon"), mhwTemplate)},
         coords = {

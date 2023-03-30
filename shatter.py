@@ -1,43 +1,61 @@
 ''' shatter
-Embed ordinal time and save files in shards for easier processing
-and parallelization '''
+Breaks up ("shatters") a dataset into more manageable pieces ("shards") 
+for future processing. Additionally, resamples data to a common time 
+axis and embeds ordinal times. These data characteristics are necessary 
+to calculate marine heatwaves using marineHeatWaves in "calc_shard_mhws".
 
-from icecream import ic
-import sys
+#### INPUTS ####
+dataDict: defines input data
+    dataPath: input path of data files to be shattered
+    dataToken: suggested tokens for datasets below
+        ARISE-SAI-1.5: '*SSP245-TSMLT-GAUSS*'
+        SSP2-4.5: '*BWSSP245*'
+outDict: specify features of output data
+    shardSize: number of degrees lat in each shard file
+        32 produces data sizes of ~1GB for SSP2-4.5 (2015-2065) and
+        ~270MB SSP2-4.5 (2015-2024). This strikes a good balance as
+        shard sizes between 100MB and 2GB are generally optimally
+        efficient. The best shardSize may vary for other datasets.
+    saveFlag: True/False to save/not save output files
+    calcEachRlz: True/False to save/not save shards for each realization
+    calcRlzMn: True/False to save/not save shards for realization mean
+    savePath: path to save shard files
+    outPrefix: optional prefix to append to output file names
 
+Written by Daniel Hueholt
+Graduate Research Assistant at Colorado State University 
+'''
 import glob
 import numpy as np
+import sys
 import xarray as xr
 
+from icecream import ic
 import fun_mhws as fm
 
-##### INPUTS ####
+##### INPUTS: SEE DOCSTRING FOR DOCUMENTATION ####
 dataDict = { 
-    "dataPath": '/Users/dhueholt/Documents/mhws_data/daily_SST/defPeriod/', # Input path 
-    "idGlensCntrl": None, #'*control*' or None
-    "idGlensFdbck": None, #'*feedback*' or None
-    "idArise": None, #'*SSP245-TSMLT-GAUSS*' or None
-    "idS245Cntrl": '*BWSSP245*', # '*BWSSP245*' or None
-    "idS245Hist": None #'*BWHIST*' or None
+    "dataPath": '/Users/dhueholt/Documents/mhws_data/daily_SST/defPeriod/',
+    "dataToken": '*BWSSP245*'
 }
 outDict = {
-    "shardSize": 32, # Number of degrees lat in each shard file
-    "saveFlag": True, # True/False to save/not save output files
-    "calcEachRlz": False, # Save shards for each realization
-    "calcRlzMn": True, # Save shards for realization mean
-    "savePath": '/Users/dhueholt/Documents/mhws_data/ordinal/', # Output path
-    "outPrefix": '' # Prefix to append to output file names
+    "shardSize": 32,
+    "saveFlag": True,
+    "calcEachRlz": False, 
+    "calcRlzMn": True,
+    "savePath": '/Users/dhueholt/Documents/mhws_data/shards/data/',
+    "outPrefix": ''
 }
 
 # Open raw data
 ic('Opening data!')
-inPath = dataDict["dataPath"] + dataDict["idS245Cntrl"]
+inPath = dataDict["dataPath"] + dataDict["dataToken"]
 inGlobs = sorted(glob.glob(inPath)) # Needed to make filenames for saving
 inDset = xr.open_mfdataset(
     inPath, concat_dim='realization', chunks={'lat': 64}, combine='nested', 
     coords='minimal')
 
-# Resample to make sure all timesteps have an entry
+# Resample to ensure all timesteps have an entry
 ic('Resampling times!')
 dsetFullTimes = inDset.resample(time='1D').asfreq()
 
