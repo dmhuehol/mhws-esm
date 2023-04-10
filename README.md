@@ -6,10 +6,10 @@
 Note that the install instructions at the marineHeatWaves repository are obsolete; Python no longer allows packages to be installed through the `setup.py` command.
 
 ## Reminders
-- [ ] Make requirements text file (don't forget to include marineHeatWaves and icecream)
-- [ ] Fill out readme with workflow
-- [ ] Add all useful outputs (frequency, category, mean intensity, duration)
-- [ ] Make in-code documentation and style PEP8 consistent (as relevant)
+- [ ] Add all useful outputs (frequency, category, mean intensity, duration) - 4/15
+- [ ] Make requirements text file (don't forget to include marineHeatWaves and icecream) - 4/26
+- [ ] Fill out readme with workflow - 4/26
+- [ ] Make in-code documentation and style PEP8 consistent (as relevant) - 4/26
 - [x] Document whole workflow in code (regrid, mergefile, shatter, calculate)
 - [x] Determine number of processes
 - [x] Link to marineHeatWaves and describe install
