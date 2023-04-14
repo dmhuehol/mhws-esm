@@ -24,12 +24,14 @@ import fun_mhws as fm
 
 ##### INPUTS: SEE DOCSTRING FOR DOCUMENTATION ####
 dataDict = { 
-    "dataPath": '/Users/dhueholt/Documents/mhwwg_out/',
+    # "dataPath": '/Users/dhueholt/Documents/mhwwg_out/',
+    "dataPath": '/glade/scratch/dhueholt/mhws_out/shards/',
     "dataToken": '*BWSSP245*'
 }
 outDict = {
     "saveFlag": True,
-    "savePath": '/Users/dhueholt/Documents/mhwwg_out/mending/',
+    # "savePath": '/Users/dhueholt/Documents/mhwwg_out/mending/',
+    "savePath": '/glade/scratch/dhueholt/mhws_out/mending/',
     "outPrefix": ''
 }
 memberTokens = list(

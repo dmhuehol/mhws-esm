@@ -27,13 +27,16 @@ import fun_mhws as fm
 
 #### INPUTS ####
 dataDict = { 
-    "dataPath": '/Users/dhueholt/Documents/mhws_data/shards/data/', # Path of data shards
+    # "dataPath": '/Users/dhueholt/Documents/mhws_data/shards/data/', # Path of data shards
+    "dataPath": '/glade/scratch/dhueholt/daily_SST/shards/data/',
     "dataToken": '*BWSSP245*', # See docstring for tokens
-    "refPath": '/Users/dhueholt/Documents/mhws_data/shards/ref/', # Path of reference shards
+    # "refPath": '/Users/dhueholt/Documents/mhws_data/shards/ref/', # Path of reference shards
+    "refPath": '/glade/scratch/dhueholt/daily_SST/shards/ref/',
     "refToken": '*BWSSP245*' # See docstring for tokens
 }
 outDict = {
-    "outPath": '/Users/dhueholt/Documents/mhwwg_out/', # Path to save MHW files
+    # "outPath": '/Users/dhueholt/Documents/mhwwg_out/', # Path to save MHW files
+    "outPath": '/glade/scratch/dhueholt/mhws_out/shards/', # Path to save MHW files
     "outPrefix": '', # Prefix to append to output filenames
     "saveFlag": True # True/False to save/not save output files
 }

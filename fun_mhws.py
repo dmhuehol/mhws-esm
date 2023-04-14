@@ -9,6 +9,7 @@ import dask
 from datetime import date
 import marineHeatWaves as mhws
 import numpy as np
+import pickle
 import sys
 import time
 import xarray as xr
@@ -37,12 +38,15 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
     
     mhwTemplate = np.empty(np.shape(sstDat))
     mhwTemplate.fill(np.nan) # timexlatxlon NaNs to be populated with data
+    mhwDurTemplate = np.copy(mhwTemplate) # "event"xlatxlon
+    mhwMeanIntTemplate = np.copy(mhwTemplate) # "event"xlatxlon
+    mhwCatTemplate = np.copy(mhwTemplate) # "event"xlatxlon
     
     # Calculate marine heatwaves
     # timerJustCalc = list()
     # timerEachMhw = list()
     # ticMhwOverall = time.time()
-    for latc, latv in enumerate(sstLats):
+    for latc, latv in enumerate(sstLats[np.arange(0,20)]):
         ic(latc) # Cheap "progress bar"
         for lonc, lonv in enumerate(sstLons):
             actDat = sstDat[:, latc, lonc]
@@ -60,11 +64,28 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
                 # timerJustCalc.append(tocEachMhwJustCalc)
                 bnryMhw = np.zeros(np.shape(sstTimes)) # Array for each MHW binary timeseries
                 mhwStrtInd = mhwsDict['index_start']
-                mhwDurInd = mhwsDict['duration']
+                mhwDur = mhwsDict['duration']
                 for actInd,startInd in enumerate(mhwStrtInd):
-                    actDur = mhwDurInd[actInd]
+                    actDur = mhwDur[actInd]
                     bnryMhw[startInd:startInd+actDur] = 1 # Times with active MHW get a 1
+                    # MHW properties are padded to be consistent along "event" dimension
+                    mhwDurTemplate[actInd, latc, lonc] = actDur
+                    mhwMeanIntTemplate[actInd, latc, lonc] = mhwsDict["intensity_mean"][actInd]
+                    actCat = mhwsDict["category"][actInd]
+                    if actCat == 'Moderate':
+                        mhwCatTemplate[actInd, latc, lonc] = 1
+                    elif actCat == 'Strong':
+                        mhwCatTemplate[actInd, latc, lonc] = 2
+                    elif actCat == 'Severe':
+                        mhwCatTemplate[actInd, latc, lonc] = 3
+                    elif actCat == 'Extreme':
+                        mhwCatTemplate[actInd, latc, lonc] = 4
+                    else:
+                        ic(actCat)
+                        mhwCatTemplate[actInd, latc, lonc] = -9999
+                    
                 mhwTemplate[:, latc, lonc] = bnryMhw
+        
                 # tocEachMhw = time.time() - ticEachMhw #; ic(tocEachMhw)
                 # timerEachMhw.append(tocEachMhw)           
     # tocMhwOverall = time.time() - ticMhwOverall; ic(tocMhwOverall)
@@ -72,7 +93,7 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
     # ic(timerEachMhw, np.mean(timerEachMhw))
     # ic(np.unique(mhwTemplate))
     
-    # Construct an MHWs dataset and save to netCDF
+    # Construct MHWs datasets and save to netCDF
     mhwDset = xr.Dataset(
         {'binary_mhw': (("time", "lat", "lon"), mhwTemplate)},
         coords = {
@@ -88,6 +109,33 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
     ic(outFile)
     if outDict["saveFlag"]:
         mhwDset.to_netcdf(outFile)
+        
+    mhwPropsDset = xr.Dataset(
+        data_vars=dict(
+            duration=(["event", "lat", "lon"], mhwDurTemplate),
+            mean_intensity=(["event", "lat", "lon"], mhwMeanIntTemplate),
+            category=(["event", "lat", "lon"], mhwCatTemplate),
+        ),
+        coords=dict(
+            event=np.arange(0,len(mhwDurTemplate)),
+            lat=rawDset.lat,
+            lon=rawDset.lon
+        ),
+        attrs=dict(description="Marine heatwave properties"),
+    )
+    mhwPropsDset['duration'].attrs = rawDset.attrs
+    mhwPropsDset['duration'].attrs['long_name'] = 'Duration of MHWs'
+    mhwPropsDset['mean_intensity'].attrs = rawDset.attrs
+    mhwPropsDset['mean_intensity'].attrs['long_name'] = 'Mean intensity of MHWs'
+    mhwPropsDset['category'].attrs = rawDset.attrs
+    mhwPropsDset['category'].attrs['long_name'] = 'Category of MHWs'
+    
+    outStrProps = dataFile.split('/')[-1].replace('SST', 'mhwProps')
+    outFileProps = outDict["outPath"] + outDict["outPrefix"] + outStrProps
+    ic(outFileProps)
+    if outDict["saveFlag"]:
+        mhwPropsDset.to_netcdf(outFileProps)
+        
 
 def make_ord_array(inTimes):
     ''' Make ordinal time array required by e.g. mhws package '''
