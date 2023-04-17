@@ -15,11 +15,12 @@ Written by Daniel Hueholt
 Graduate Research Assistant at Colorado State University 
 '''
 import glob
-import numpy as np
 import sys
-import xarray as xr
 
 from icecream import ic
+import numpy as np
+import xarray as xr
+
 import fun_mhws as fm
 
 ##### INPUTS: SEE DOCSTRING FOR DOCUMENTATION ####

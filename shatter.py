@@ -26,24 +26,25 @@ Written by Daniel Hueholt
 Graduate Research Assistant at Colorado State University 
 '''
 import glob
-import numpy as np
 import sys
+
+import numpy as np
+from icecream import ic
 import xarray as xr
 
-from icecream import ic
 import fun_mhws as fm
 
 ##### INPUTS: SEE DOCSTRING FOR DOCUMENTATION ####
 dataDict = { 
-    "dataPath": '/Users/dhueholt/Documents/mhws_data/daily_SST/full/',
-    # "dataPath": '/glade/scratch/dhueholt/daily_SST/defPeriod/',
+    # "dataPath": '/Users/dhueholt/Documents/mhws_data/daily_SST/full/',
+    "dataPath": '/glade/scratch/dhueholt/daily_SST/defPeriod/',
     "dataToken": '*BWSSP245*'
 }
 outDict = {
     "shardSize": 32,
     "saveFlag": True,
-    "calcEachRlz": True, 
-    "calcRlzMn": False,
+    "calcEachRlz": False, 
+    "calcRlzMn": True,
     "savePath": '/glade/scratch/dhueholt/daily_SST/shards/ref/',
     "outPrefix": ''
 }

@@ -5,17 +5,16 @@ mhws-esm package.
 Written by Daniel Hueholt
 Graduate Research Assistant at Colorado State University
 '''
-import dask
 from datetime import date
-import marineHeatWaves as mhws
-import numpy as np
-import pickle
 import sys
 import time
+
+import dask
+from icecream import ic
+import marineHeatWaves as mhws
+import numpy as np
 import xarray as xr
 xr.set_options(keep_attrs=True)
-
-from icecream import ic
 
 def calc_marine_heatwaves(refFile, dataFile, outDict):
     ''' Calculate marine heatwaves from input file relative to a 
@@ -38,6 +37,8 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
     
     mhwTemplate = np.empty(np.shape(sstDat))
     mhwTemplate.fill(np.nan) # timexlatxlon NaNs to be populated with data
+    timeStrtTemplate = np.copy(mhwTemplate) # "event"xlatxlon
+    timeEndTemplate = np.copy(mhwTemplate) # "event"xlatxlon
     mhwDurTemplate = np.copy(mhwTemplate) # "event"xlatxlon
     mhwMeanIntTemplate = np.copy(mhwTemplate) # "event"xlatxlon
     mhwCatTemplate = np.copy(mhwTemplate) # "event"xlatxlon
@@ -69,6 +70,8 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
                     actDur = mhwDur[actInd]
                     bnryMhw[startInd:startInd+actDur] = 1 # Times with active MHW get a 1
                     # MHW properties are padded to be consistent along "event" dimension
+                    timeStrtTemplate[actInd, latc, lonc] = mhwsDict["time_start"][actInd]
+                    timeEndTemplate[actInd, latc, lonc] = mhwsDict["time_end"][actInd]
                     mhwDurTemplate[actInd, latc, lonc] = actDur
                     mhwMeanIntTemplate[actInd, latc, lonc] = mhwsDict["intensity_mean"][actInd]
                     actCat = mhwsDict["category"][actInd]
@@ -112,6 +115,8 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
         
     mhwPropsDset = xr.Dataset(
         data_vars=dict(
+            time_start=(["event", "lat", "lon"], timeStrtTemplate),
+            time_end=(["event", "lat", "lon"], timeEndTemplate),
             duration=(["event", "lat", "lon"], mhwDurTemplate),
             mean_intensity=(["event", "lat", "lon"], mhwMeanIntTemplate),
             category=(["event", "lat", "lon"], mhwCatTemplate),
@@ -123,6 +128,10 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
         ),
         attrs=dict(description="Marine heatwave properties"),
     )
+    mhwPropsDset['time_start'].attrs = rawDset.attrs
+    mhwPropsDset['time_start'].attrs['long_name'] = 'Start time of MHWs'
+    mhwPropsDset['time_end'].attrs = rawDset.attrs
+    mhwPropsDset['time_end'].attrs['long_name'] = 'End time of MHWs'
     mhwPropsDset['duration'].attrs = rawDset.attrs
     mhwPropsDset['duration'].attrs['long_name'] = 'Duration of MHWs'
     mhwPropsDset['mean_intensity'].attrs = rawDset.attrs

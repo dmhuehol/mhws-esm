@@ -26,11 +26,12 @@ Based on code originally written by Emily Gordon and Zachary Labe.
 '''
 import glob
 import multiprocessing as mp
-import numpy as np
 import sys
-import xarray as xr
 
 from icecream import ic
+import numpy as np
+import xarray as xr
+
 import fun_remap as fr
 
 # Inputs - see docstring for details
