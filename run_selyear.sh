@@ -1,30 +1,17 @@
-#!/bin/bash -l
-### Job Name
-#PBS -N selyear_20112014
-### Project code
-#PBS -A P06010014
-#PBS -l walltime=30:00
-#PBS -q casper
-### Merge output and error files
-#PBS -j oe
-### Select 1 nodes with 1 CPUs each
-#PBS -l select=1:ncpus=1:mem=10GB
-### Send email on abort, begin and end
-#PBS -m abe
-### Specify mail recipient
-#PBS -M dhueholt@rams.colostate.edu
-# exec &> logfile_ssp245_copy.txt
+#!/bin/bash
 
-# export TMPDIR=/glade/scratch/dhueholt/temp
-# mkdir -p $TMPDIR
-module load cdo
+#SBATCH --partition=bar_all
+#SBATCH --job-name=selyear
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --output=logfile_selyear.txt
 
-IN_PATH="/glade/scratch/dhueholt/daily_SST/"
+IN_PATH="scratch/dhueholt/daily_SST/"
 # IN_PATH="/Users/dhueholt/Documents/mhws_data/daily_SST/full/"
 IN_TOKEN="*.SST.*"
 STRT_YR=2015
 END_YR=2024
-OUT_PATH="/glade/scratch/dhueholt/daily_SST/defPeriod/"
+OUT_PATH="/scratch/dhueholt/daily_SST/defPeriod/"
 # OUT_PATH="/Users/dhueholt/Documents/mhws_data/daily_SST/"
 
 IN_CARD="$IN_PATH$IN_TOKEN"

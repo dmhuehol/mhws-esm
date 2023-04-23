@@ -26,13 +26,14 @@ import fun_mhws as fm
 ##### INPUTS: SEE DOCSTRING FOR DOCUMENTATION ####
 dataDict = { 
     # "dataPath": '/Users/dhueholt/Documents/mhwwg_out/',
-    "dataPath": '/glade/scratch/dhueholt/mhws_out/shards/',
-    "dataToken": '*BWSSP245*'
+    # "dataPath": '/glade/scratch/dhueholt/mhws_out/shards/',
+    "dataPath": '/Volumes/Polycrystal/Data/mhws-esm/mhw_out/arise15/mhwProps/',
+    "dataToken": '*SSP245-TSMLT-GAUSS-DEFAULT*'
 }
 outDict = {
     "saveFlag": True,
     # "savePath": '/Users/dhueholt/Documents/mhwwg_out/mending/',
-    "savePath": '/glade/scratch/dhueholt/mhws_out/mending/',
+    "savePath": '/Volumes/Polycrystal/Data/mhws-esm/mhw_out/arise15/mhwProps/mending/',
     "outPrefix": ''
 }
 memberTokens = list(
@@ -43,7 +44,8 @@ for m in memberTokens:
     inToken = dataDict["dataToken"] + m
     inStr = dataDict["dataPath"] + inToken
     try:
-        mendDs = xr.open_mfdataset(inStr, chunks={'lat': 64}) #automatically concatenates along lat
+        mendDs = xr.open_mfdataset(inStr, chunks={'lat': 64}).load() #automatically concatenates along lat
+        # .load() is inefficient & subverts the advantages of using xarray, but it's required to write .nc files reliably
         shardGlobs = sorted(glob.glob(inStr))
         if shardGlobs != []:
             strWithShard = shardGlobs[0].split('/')[-1]
@@ -54,4 +56,5 @@ for m in memberTokens:
             if outDict["saveFlag"]:
                 mendDs.to_netcdf(outMendFile)
     except: # Usually means no data
+        ic('EXCEPT??')
         pass

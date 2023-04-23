@@ -28,20 +28,20 @@ import fun_mhws as fm
 
 #### INPUTS ####
 dataDict = { 
-    # "dataPath": '/Users/dhueholt/Documents/mhws_data/shards/data/', # Path of data shards
-    "dataPath": '/glade/scratch/dhueholt/daily_SST/shards/data/',
-    "dataToken": '*BWSSP245*', # See docstring for tokens
-    # "refPath": '/Users/dhueholt/Documents/mhws_data/shards/ref/', # Path of reference shards
-    "refPath": '/glade/scratch/dhueholt/daily_SST/shards/ref/',
+    "dataPath": '/Volumes/Polycrystal/Data/mhws-esm/daily_SST/arise15/', # Path of data shards
+    # "dataPath": '/glade/scratch/dhueholt/daily_SST/shards/data/',
+    "dataToken": '*SSP245-TSMLT-GAUSS-DEFAULT*', # See docstring for tokens
+    "refPath": '/Volumes/Polycrystal/Data/mhws-esm/daily_SST/ref/', # Path of reference shards
+    # "refPath": '/glade/scratch/dhueholt/daily_SST/shards/ref/',
     "refToken": '*BWSSP245*' # See docstring for tokens
 }
 outDict = {
-    # "outPath": '/Users/dhueholt/Documents/mhwwg_out/', # Path to save MHW files
-    "outPath": '/glade/scratch/dhueholt/mhws_out/shards/', # Path to save MHW files
+    "outPath": '/Volumes/Polycrystal/Data/mhws-esm/mhw_out/arise15/', # Path to save MHW files
+    # "outPath": '/glade/scratch/dhueholt/mhws_out/shards/', # Path to save MHW files
     "outPrefix": '', # Prefix to append to output filenames
     "saveFlag": True # True/False to save/not save output files
 }
-numProc = 7 # Number of files to parallel process; set to threads-1 (e.g., multiprocessing.cpu_count()-1) for best efficiency
+numProc = 4 # Number of files to parallel process; set to threads-1 (e.g., multiprocessing.cpu_count()-1) for best efficiency
 
 # Match up data shards and reference shards
 dataGlobs = sorted(glob.glob(dataDict["dataPath"] + dataDict["dataToken"]))

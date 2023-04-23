@@ -37,17 +37,22 @@ def calc_marine_heatwaves(refFile, dataFile, outDict):
     
     mhwTemplate = np.empty(np.shape(sstDat))
     mhwTemplate.fill(np.nan) # timexlatxlon NaNs to be populated with data
-    timeStrtTemplate = np.copy(mhwTemplate) # "event"xlatxlon
-    timeEndTemplate = np.copy(mhwTemplate) # "event"xlatxlon
-    mhwDurTemplate = np.copy(mhwTemplate) # "event"xlatxlon
-    mhwMeanIntTemplate = np.copy(mhwTemplate) # "event"xlatxlon
-    mhwCatTemplate = np.copy(mhwTemplate) # "event"xlatxlon
+    templateShape = np.shape(mhwTemplate)
+    # By definition, there can never be more MHW events than timesteps/7. This reduces the 
+    # size of the output while still providing sufficient padding to calculate events.
+    timeStrtTemplate = np.empty(
+        (int(templateShape[0]/7), int(templateShape[1]), int(templateShape[2]))) # "event"xlatxlon
+    timeStrtTemplate.fill(np.nan)
+    timeEndTemplate = np.copy(timeStrtTemplate) # "event"xlatxlon
+    mhwDurTemplate = np.copy(timeStrtTemplate) # "event"xlatxlon
+    mhwMeanIntTemplate = np.copy(timeStrtTemplate) # "event"xlatxlon
+    mhwCatTemplate = np.copy(timeStrtTemplate) # "event"xlatxlon
     
     # Calculate marine heatwaves
     # timerJustCalc = list()
     # timerEachMhw = list()
     # ticMhwOverall = time.time()
-    for latc, latv in enumerate(sstLats[np.arange(0,20)]):
+    for latc, latv in enumerate(sstLats):
         ic(latc) # Cheap "progress bar"
         for lonc, lonv in enumerate(sstLons):
             actDat = sstDat[:, latc, lonc]
@@ -162,12 +167,21 @@ def make_ord_array(inTimes):
     
 def mine_file_str(fileStr):
     ''' Mine useful metadata from filename '''
+    # b.e21.BW.f09_g17.SSP245-TSMLT-GAUSS-DEFAULT.001.pop.h.nday1.SST.20350101-20691231_RG.nc
     pieces = fileStr.split('.')
-    fileDict = {
-        "scn": pieces[2],
-        "rlz": pieces[6],
-        "var": pieces[10],
-        "times": pieces[11][:-3]
-    }
+    if 'BWSSP245' in fileStr: #no-SAI SSP2-4.5
+        fileDict = {
+            "scn": pieces[2],
+            "rlz": pieces[6],
+            "var": pieces[10],
+            "times": pieces[11][:-3]
+        }
+    elif 'SSP245-TSMLT-GAUSS-DEFAULT' in fileStr: #SAI ARISE-SAI-1.5
+        fileDict = {
+            "scn": pieces[4],
+            "rlz": pieces[5],
+            "var": pieces[9],
+            "times": pieces[10][:-3]
+        }
 
     return fileDict

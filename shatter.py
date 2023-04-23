@@ -8,7 +8,7 @@ to calculate marine heatwaves using marineHeatWaves in "calc_shard_mhws".
 dataDict: defines input data
     dataPath: input path of data files to be shattered
     dataToken: suggested tokens for datasets below
-        ARISE-SAI-1.5: '*SSP245-TSMLT-GAUSS*'
+        ARISE-SAI-1.5: '*SSP245-TSMLT-GAUSS-DEFAULT*'
         SSP2-4.5: '*BWSSP245*'
 outDict: specify features of output data
     shardSize: number of degrees lat in each shard file
@@ -37,15 +37,15 @@ import fun_mhws as fm
 ##### INPUTS: SEE DOCSTRING FOR DOCUMENTATION ####
 dataDict = { 
     # "dataPath": '/Users/dhueholt/Documents/mhws_data/daily_SST/full/',
-    "dataPath": '/glade/scratch/dhueholt/daily_SST/defPeriod/',
-    "dataToken": '*BWSSP245*'
+    "dataPath": '/glade/scratch/dhueholt/daily_SST/full/',
+    "dataToken": '*SSP245-TSMLT-GAUSS-DEFAULT*'
 }
 outDict = {
     "shardSize": 32,
     "saveFlag": True,
     "calcEachRlz": False, 
     "calcRlzMn": True,
-    "savePath": '/glade/scratch/dhueholt/daily_SST/shards/ref/',
+    "savePath": '/glade/scratch/dhueholt/daily_SST/shards/data/ARISE-SAI-1.5/',
     "outPrefix": ''
 }
 
